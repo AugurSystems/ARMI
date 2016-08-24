@@ -1,5 +1,5 @@
 # Asynchronous Remote Method Invocation (ARMI)
-ARMI (pronounced "army") is an alternative to Java's built-in RMI. Like RMI, ARMI can make synchronous remote method calls. But ARMI can also support asynchronous messaging. ARMI also works around common client/server headaches, like NAT and firewalls.
+ARMI (pronounced "army") is an alternative to Java's built-in RMI. Like RMI, ARMI can make synchronous remote method calls. But ARMI can also support asynchronous messaging. ARMI also works around common client/server headaches, like NAT and firewalls.  It's small... The entire ARMI library currently fits in a 32 kb jar.
 
 # Synchronous
 When a program calls a method, it will wait (block) until the method returns with a value, or void. Remote methods work the same way. So a client application will block until the method on the remote server returns. This call/response scenario is called synchronous.
@@ -53,6 +53,3 @@ The subscriber can also specify a filter so that ARMI can be even more selective
 
 Since a filter is Java code that you write, you can get very fancy. For example, a complex filter might perform a statistical analysis or reference an external database before approving data.
 
-## >>Small<<
-
-The entire ARMI library currently fits in a 32 kb jar.
