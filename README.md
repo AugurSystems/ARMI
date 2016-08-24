@@ -52,8 +52,10 @@ import com.augursystems.armi.*;
 Armi armi = new Armi(); // Instantiate an ARMI server
 
 // Let's call market.getMarketIndex("DJX", "20") on a remote ARMI server...
-Serializable[] params = new Serializable[] { "DJX", "20" }; // An array for the method's arguments
-Serializable value = armi.call(remoteServer,"Market", "getMarketIndex", params); // The remote call
+/** An array for the method's arguments */
+Serializable[] params = new Serializable[] { "DJX", "20" }; 
+/** The remote call */
+Serializable value = armi.call(remoteServer,"Market", "getMarketIndex", params); 
 System.out.println("The Dow Jones index is" + value);
 ```
  
@@ -78,7 +80,8 @@ Client client = new Client()
   {
     try
     {
-      Object quote = p.decodeInstance(); // Let ARMI de-serialize (unmarshal) the object for you
+      // Let ARMI de-serialize (unmarshal) the object for you
+      Object quote = p.decodeInstance(); 
       System.out.println("Received stock quote: "+ quote);
     }
     catch (Exception e) { System.out.println("Problem unmarshalling a quote: "+e; }
@@ -87,17 +90,20 @@ Client client = new Client()
 
 // Point to the remote server; use default port...
 HostPort remoteServer = new HostPort("192.168.1.111");
-// Ask the remoteServer to send "StockQuote" data types, with any flavor (null), and no filter (null), to our client
+// Ask the remoteServer to send "StockQuote" data types, with any flavor (null), 
+// and no filter (null), to our client.
 armi.subscribeRemote(remoteServer, StockQuote.class.getName(), null, null, client);
 ```
 
 ## Publish Data
 ```java
-// The following code would presumably be running on the remote server that publishes data for clients...
-StockQuote quote = new StockQuote("ACME", "$8.94"); // Create a datum representing a stock ticker value
+// The following code would presumably be running on the remote server that 
+// publishes data for clients.  Creates a datum representing a stock ticker value.
+StockQuote quote = new StockQuote("ACME", "$8.94"); 
 
 // Publish the data so the server can transmit it to any subscribers...
 armi.transmit(quote, "NASDAQ");
-// The data type is automatically set to the class name via quote.getClass(), e.g. "com.bank.myapp.StockQuote"
-// The flavor is specified as the "NASDAQ" stock exchange, which may be a useful classification
+// The data type is automatically set to the class name via quote.getClass(), e.g. 
+// "com.bank.myapp.StockQuote" The flavor is specified as the "NASDAQ" stock exchange, 
+// which may be a useful classification.
 ```
