@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="build" name="ARMI">
+	<description>
+		A remote method invocation library with both synchronous (RMI-like) and
+		asychronous (message bus-like) messaging facilities.
+
+		Copyright 2012, Augur Systems, Inc.  All rights reserved.
+	</description>
+	
+	<!--xmlproperty file="build/properties.xml" semanticAttributes="true" includeSemanticAttribute="true" keepRoot="false"/-->
+
+	<property name ="projectName" value="armi"/>
+	<property name ="Product-Name" value="ARMI Asynchronous Remote Method Invocation"/>
+	<property name ="Product-Version" value="1.0.0"/>
+	<property name ="company" value="Augur Systems, Inc."/>
+	<property name ="projectLibDir" value="lib"/>
+	<property name ="projectJarName" value="armi.jar"/>
+	<property name ="projectJarName-Demo" value="armi-demo.jar"/>
+	<property name ="src" value="src"/>
+	<property name ="javacVersion" value="1.5"/>
+	<property name ="classes" value="build/classes"/>
+
+
+
+	<target name="build" description="Build EVERYTHING">
+		<antcall target="clean"/>
+		<antcall target="env"/>
+		<antcall target="compile+jar"/>
+		<antcall target="demo"/>
+		<antcall target="javadoc"/>
+	</target>
+
+
+	<target name="env" description="Create/clean directories, copy libs, etc.">
+		<mkdir dir="${classes}"/>
+		<mkdir dir="${projectLibDir}"/>
+	</target>
+	
+	<target name="compile+jar" description="Compile and jar the core library; demo code not included.">
+		<antcall target="clean:classes"/>
+		<javac
+			debug="true"
+			debuglevel="lines,source"
+			deprecation="false"
+			includeantruntime="false"
+			destdir="${classes}"
+			source="${javacVersion}"
+			srcdir="${src}"
+			target="${javacVersion}"
+			verbose="false"
+		>
+			<include name="com/augursystems/armi/*.java"/>
+		</javac>
+		
+		<tstamp><format property="timestamp" pattern="MMMM dd, yyyy hh:mm:ss aa z"/></tstamp>
+		
+		<jar compress="true" destfile="${projectLibDir}/${projectJarName}">
+			<manifest>
+				<attribute name="Created-By" value="${company}"/>
+				<attribute name="Class-Path" value="${projectJarName-Demo}"/>
+				<attribute name="Main-Class" value="com.augursystems.armi.demo.CommandLine"/>
+				<attribute name="ProductName" value="${Product-Name}"/>
+				<attribute name="Product-Version" value="${Product-Version}"/>
+				<attribute name="Product-Build" value="${timestamp}"/>
+		</manifest>
+			<fileset dir="${classes}">
+				<include name="**/*.class"/>
+				<exclude name="**/demo/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+
+	<target name="demo" description="Compile and jar the extra classes used for demo." >
+		<antcall target="clean:classes"/>
+		<javac
+			debug="true"
+			debuglevel="lines,source"
+			deprecation="false"
+			includeantruntime="false"
+			destdir="${classes}"
+			source="${javacVersion}"
+			srcdir="${src}"
+			target="${javacVersion}"
+			verbose="false"
+			classpath="${projectLibDir}/${projectJarName}"
+		>
+			<include name="**/demo/*.java"/>
+		</javac>
+		
+		<tstamp><format property="timestamp" pattern="MMMM dd, yyyy hh:mm:ss aa z"/></tstamp>
+		
+		<jar compress="true" destfile="${projectLibDir}/${projectJarName-Demo}">
+			<manifest>
+				<attribute name="Created-By" value="${company}"/>
+				<attribute name="Class-Path" value="${projectJarName}"/>
+				<attribute name="Main-Class" value="com.augursystems.armi.demo.CommandLine"/>
+				<attribute name="ProductName" value="${Product-Name} (Demo Lib Extras)"/>
+				<attribute name="Product-Version" value="${Product-Version}"/>
+				<attribute name="Product-Build" value="${timestamp}"/>
+		</manifest>
+			<fileset dir="${classes}">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+
+
+	<target name="clean">
+		<antcall target="clean:classes"/>
+		<delete failonerror="false" includeEmptyDirs="true" verbose="false">
+			<fileset dir="lib/*"/>
+		</delete>
+	</target>
+
+
+	<target	name="clean:classes">
+		<delete failonerror="false" verbose="false" includeemptydirs="true" >
+			<fileset dir="${classes}" includes="**/*"/>
+		</delete>
+	</target>
+
+
+	<target name="javadoc">
+		<mkdir dir="docs"/>
+		<mkdir dir="docs/api"/>
+		<javadoc
+			sourcepath="${src}"
+			destdir="docs/api"
+			Windowtitle="ARMI"
+			Doctitle="true"
+			Public="true"
+			Private="false"
+			Protected="false"
+			Author="false"
+			Package="false"
+			source="${javacVersion}"
+			Use="true"
+			bottom="Copyright 2012, Augur Systems, Inc.  All rights reserved.  http://www.AugurSystems.com/"
+		/>
+	</target>
+
+
+
+	
+</project>
