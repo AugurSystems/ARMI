@@ -20,7 +20,7 @@ import java.util.Map;
  */
 class ArmiRemote extends Object implements Runnable
 {
-	private static final int BUFF_SIZE = 1024*512;
+	private static final int BUFF_SIZE = 1024*1024;
 	protected final HostPort hostPort;
 	private final ByteArrayOutputStream bout;
 	private final ArmiOutputStreamHeaderless aout;
