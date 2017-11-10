@@ -9,7 +9,7 @@
 	
 	<!--xmlproperty file="build/properties.xml" semanticAttributes="true" includeSemanticAttribute="true" keepRoot="false"/-->
 
-	<property name ="projectName" value="armi"/>
+	<property name ="projectName" value="ARMI"/>
 	<property name ="Product-Name" value="ARMI Asynchronous Remote Method Invocation"/>
 	<property name ="Product-Version" value="1.0.0"/>
 	<property name ="company" value="Augur Systems, Inc."/>

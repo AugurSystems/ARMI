@@ -1,3 +1,4 @@
-/build/classes/
 /lib/
-/nbproject/
+/build/classes/
+/nbproject/private/
+*/.DS_Store
