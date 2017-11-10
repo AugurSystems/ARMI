@@ -27,7 +27,7 @@
 		<antcall target="env"/>
 		<antcall target="compile+jar"/>
 		<antcall target="demo"/>
-		<antcall target="javadoc"/>
+		<!--antcall target="javadoc"/-->
 	</target>
 
 
@@ -125,7 +125,7 @@
 	<target name="javadoc">
 		<mkdir dir="docs"/>
 		<mkdir dir="docs/api"/>
-		<javadoc
+		<javadoc 
 			sourcepath="${src}"
 			destdir="docs/api"
 			Windowtitle="ARMI"
@@ -137,7 +137,7 @@
 			Package="false"
 			source="${javacVersion}"
 			Use="true"
-			bottom="Copyright 2012, Augur Systems, Inc.  All rights reserved.  http://www.AugurSystems.com/"
+			bottom="Copyright 2012-2107, Augur Systems, Inc.  All rights reserved.  http://www.AugurSystems.com/"
 		/>
 	</target>
 
