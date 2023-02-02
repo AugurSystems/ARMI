@@ -108,6 +108,12 @@ final class Receiver extends Thread
 				if (Armi.debug) { Armi.log("========================================"); }
 				close("Remote server disconnected.");
 			}
+			catch (java.io.StreamCorruptedException sce)
+			{
+				String m = "Bad packet from "+socket.getInetAddress(); //Logging sce (which shows bad byte) makes log unnecessarily unique (evading logRepeat counter)...// +": "+sce.getMessage();
+				if (isRunnable()) Armi.log(m);
+				close(m);
+			}
 			catch (Exception ex)
 			{
 				if (isRunnable())

@@ -4,20 +4,20 @@
 		A remote method invocation library with both synchronous (RMI-like) and
 		asychronous (message bus-like) messaging facilities.
 
-		Copyright 2012, Augur Systems, Inc.  All rights reserved.
+		Copyright 2012-2023, Augur Systems, Inc.  All rights reserved.
 	</description>
 	
 	<!--xmlproperty file="build/properties.xml" semanticAttributes="true" includeSemanticAttribute="true" keepRoot="false"/-->
 
 	<property name ="projectName" value="ARMI"/>
 	<property name ="Product-Name" value="ARMI Asynchronous Remote Method Invocation"/>
-	<property name ="Product-Version" value="1.0.0"/>
+	<property name ="Product-Version" value="1.1.0"/>
 	<property name ="company" value="Augur Systems, Inc."/>
 	<property name ="projectLibDir" value="lib"/>
 	<property name ="projectJarName" value="armi.jar"/>
 	<property name ="projectJarName-Demo" value="armi-demo.jar"/>
 	<property name ="src" value="src"/>
-	<property name ="javacVersion" value="1.5"/>
+	<property name ="javacVersion" value="8"/>
 	<property name ="classes" value="build/classes"/>
 
 

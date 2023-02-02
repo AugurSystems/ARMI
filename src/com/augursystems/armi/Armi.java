@@ -7,12 +7,14 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -82,21 +84,51 @@ public final class Armi extends Object implements Runnable
 
 	/** The thread managing remote conditions; null until acceptRemoteClients() called */
 	private Thread thread = null;
+	private AccessControl control=null;
 
+	public interface AccessControl { public boolean isAddressAllowed(InetAddress addy); }
+	
+	public static void log(String desc) { log(desc,null); }
 
-	public static void log(String desc)
-	{
-		log(desc,null);
-	}
-
-	// TODO: write to a formal logging system?  (Or leave as is, to minimize library size and dependencies?)
-	@SuppressWarnings("CallToThreadDumpStack")
+	/** Reusable Date object to avoid instantiation, and doubles as a sync lock to separate log() calls */
+	private static final Date LOG_DATE = new Date();
+	static volatile String lastLog=""; static volatile int logRepeat=0; static int logRepeatMax = 10;
+	@SuppressWarnings({"CallToPrintStackTrace"})
 	public static void log(String desc, Throwable exc)
 	{
-		System.out.println(desc);
-		if (exc!=null)
+		synchronized(LOG_DATE)
 		{
-			exc.printStackTrace();
+			if (desc==null) { System.out.println(); return; } // log blank line, useful for formatting break?
+			if (desc.equals(lastLog)) 
+			{ 
+				logRepeat++; 
+				if (logRepeat >= logRepeatMax) // log progress, bump up limit
+				{ 
+					if (logRepeatMax<=100000000) 
+					{
+						logRepeatMax *= 10;
+						System.out.println("["+(new Date())+"] ARMI> Last ARMI log repeated "+String.format("%,d",logRepeat)+" times, and counting...");
+					} 
+					else 
+					{
+						System.out.println("["+(new Date())+"] ARMI> Last ARMI log repeated "+String.format("%,d",logRepeat)+" times.  Too high, resetting counter.");
+						logRepeat=0;
+					}
+				} 
+			}
+			else
+			{
+				if (logRepeat>0) 
+				{ 
+					String m = "Last ARMI log repeated "+String.format("%,d",logRepeat)+" times.";
+					logRepeat=0; logRepeatMax = 10;
+					log(m,null); 
+				}
+				LOG_DATE.setTime(System.currentTimeMillis());
+				System.out.println("["+LOG_DATE+"] ARMI> "+desc);
+				lastLog = desc;
+				if (exc!=null) { exc.printStackTrace(); }
+			}
 		}
 	}
 
@@ -131,8 +163,16 @@ public final class Armi extends Object implements Runnable
 			try 
 			{
 				Socket socket = ss.accept();
-				if (debug) { log("Accepting connection from remote server @ "+socket.getInetAddress()+":"+socket.getPort()+" @ "+System.currentTimeMillis()); }
-				ArmiRemote remote = new ArmiRemote(new HostPort(socket.getInetAddress(), socket.getPort()), this, socket);
+				InetAddress remoteAddy = socket.getInetAddress();
+				int remotePort = socket.getPort();
+				if (control!=null && !control.isAddressAllowed(remoteAddy))
+				{
+					if (true) { log("Denied per access control: "+remoteAddy); }
+					socket.close();
+					continue;
+				}
+				if (debug) { log("Accepting connection from remote server @ "+remoteAddy); }
+				ArmiRemote remote = new ArmiRemote(new HostPort(remoteAddy, remotePort), this, socket);
 				remote.start();
 				putRemoteServer(remote);
 			}
@@ -690,7 +730,7 @@ public final class Armi extends Object implements Runnable
 	/** A convenience method to call acceptRemoteClients() on any local network interface, at default ARMI port number */
 	public final int acceptRemoteClients() throws IllegalStateException, IOException
 	{
-		return acceptRemoteClients(null);
+		return acceptRemoteClients(null, null);
 	}
 	
 	
@@ -726,10 +766,11 @@ public final class Armi extends Object implements Runnable
 	 * useful when you explictly specify a zero port number since a random port number will
 	 * be assigned; otherwise it just returns the same port number you specified.
 	 */
-	public final int acceptRemoteClients(HostPort hp) throws IllegalStateException, IOException
+	public final int acceptRemoteClients(HostPort hp, AccessControl control) throws IllegalStateException, IOException
 	{
 		if (hp==null) hp = new HostPort((String)null, DEFAULT_PORT);
 		if (hp.getPort()<0) hp.setPort(DEFAULT_PORT);
+		this.control = control;
 		if (!isRunnable() && ss==null)
 		{
 			thread = new Thread(this);

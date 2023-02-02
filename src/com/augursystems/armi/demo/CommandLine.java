@@ -44,7 +44,7 @@ public class CommandLine
 			}
 			else if (opts.isSet("start"))
 			{
-				armi.acceptRemoteClients(hp);
+				armi.acceptRemoteClients(hp,null);
 
 				// Start demo publishers?...
 				if (opts.isSet("demo"))
